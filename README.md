@@ -11,7 +11,7 @@ this repo automates the process of deployong docker+terafik+modSecWAF with ansib
 
 ---
 
-# NOTE
+# NOTES
 
 1- If you already have docker then you should edit the base role.
 
