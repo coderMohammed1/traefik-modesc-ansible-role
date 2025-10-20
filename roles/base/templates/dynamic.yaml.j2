@@ -1,0 +1,39 @@
+http:
+  services:
+    traefik-dashboard:
+      loadBalancer:
+        servers:
+          - url: "http://traefik:8080"
+
+    website-with-waf:
+      loadBalancer:
+        servers:
+          - url: "http://website-with-waf:80"
+
+  middlewares:
+    limit:
+      buffering:
+        maxRequestBodyBytes: 1048576 # not tested yet
+
+    waf:
+      plugin:
+        traefik-modsecurity-plugin:
+          modSecurityUrl: "http://waf:8080"
+          jailEnabled: true #blocks after many bad stuff
+
+    ratelimit:
+      rateLimit:
+        average: 50     # requests per second
+        burst: 5       # allow short bursts (extra requests)
+
+  routers:
+    website-with-waf-router:
+      rule: "PathPrefix(`/website`)"
+      service: website-with-waf
+      middlewares: ["waf", "ratelimit"]
+      entryPoints: ["http"]
+
+    dashboard-router:
+      rule: "PathPrefix(`/dashboard`)"
+      service: traefik-dashboard
+      entryPoints: ["http"]

@@ -1,0 +1,87 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install required system packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+      - python3-pip
+      - python3-setuptools
+      - python3-venv
+      - python3-paramiko
+    state: present
+
+- name: Add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+    state: present
+    filename: docker
+
+- name: Install Docker packages
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+      - python3-docker
+    state: present
+    update_cache: yes
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: setup static.yaml
+  template:
+    src: traefik.yaml.j2
+    dest: /etc/traefik.yaml
+    owner: root
+    group: root
+    mode: 777 # we can talk about this when this thing works
+
+- name: setup dynamic.yaml
+  template:
+    src: dynamic.yaml.j2
+    dest: /etc/dynamic.yaml
+    owner: root
+    group: root
+    mode: 777 
+
+- name: Sync local directory to remote host
+  synchronize:
+    src: ./files/modsec_conf/
+    dest: /etc/modsec_conf/
+    recursive: yes
+    delete: yes
+
+- name: Set ownership and permissions on synced directory
+  file:
+    path: /etc/modsec_conf/
+    owner: 100
+    group: 65533
+    recurse: yes
+    mode: '0755'
+
+
+- name: Ensure ModSecurity audit log exists with correct permissions
+  file:
+    path: /var/log/modsec_audit.log
+    state: touch
+    owner: 100
+    group: 65533
+    mode: '0640'

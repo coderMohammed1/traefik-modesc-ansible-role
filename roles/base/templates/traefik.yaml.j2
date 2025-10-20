@@ -1,0 +1,23 @@
+log:
+  level: DEBUG
+
+accessLog: {}
+
+api:
+  dashboard: true
+  insecure: true
+
+entryPoints:
+  http:
+    address: ":80"
+
+providers:
+  docker: true
+  file:
+    filename: /etc/traefik/dynamic.yaml
+
+experimental:
+  plugins:
+    traefik-modsecurity-plugin:
+      modulename: "github.com/madebymode/traefik-modsecurity-plugin"
+      version: "v1.6.0"

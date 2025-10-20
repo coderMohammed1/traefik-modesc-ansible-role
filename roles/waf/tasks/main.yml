@@ -1,0 +1,40 @@
+- name: Create Network
+  community.docker.docker_network:
+    name: waf_network
+
+- name: pull and Deploy
+  community.docker.docker_container:
+    name: traefik
+    image: traefik:latest
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "80:80"
+      - "8080:8080"
+    networks:
+      - name: waf_network
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/etc/traefik.yaml:/etc/traefik/traefik.yaml:ro"
+      - "/etc/dynamic.yaml:/etc/traefik/dynamic.yaml:ro"
+
+- name: dummy backend
+  community.docker.docker_container:
+    name: dummy
+    image: traefik/whoami
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: waf_network
+
+- name: website-with-waf
+  community.docker.docker_container:
+    name: website-with-waf
+    image: traefik/whoami
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: waf_network
+
+- name: Include WAF tasks
+  include_tasks: waf.yml

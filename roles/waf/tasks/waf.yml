@@ -1,0 +1,22 @@
+- name: Deploy a waf
+  community.docker.docker_container:
+    name: waf
+    image: owasp/modsecurity-crs:4.3.0-apache-alpine-202406090906
+    env:
+      PARANOIA: "1"
+      ANOMALY_INBOUND: "5"
+      ANOMALY_OUTBOUND: "5"
+      BACKEND: "http://dummy"
+      REPORTING_LEVEL: "5"
+      MODSEC_AUDIT_LOG_FORMAT: "JSON"
+      MODSEC_RULE_ENGINE: "On"
+      MODSEC_AUDIT_ENGINE: "RelevantOnly"
+      MODSEC_AUDIT_LOG: "/var/log/modsec_audit.log"
+      MODSEC_AUDIT_LOG_PARTS: "ABKZ"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: waf_network
+    volumes:
+      - /etc/modsec_conf/modsecurity.d:/etc/modsecurity.d
+      - /var/log/modsec_audit.log:/var/log/modsec_audit.log

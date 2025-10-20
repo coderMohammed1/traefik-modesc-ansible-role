@@ -1,0 +1,11 @@
+- name: Install required system packages
+  hosts: all
+  user: root
+  roles:
+    - role: base
+
+- name: running traefik
+  hosts: all
+  user: root
+  roles:
+    - role: waf
