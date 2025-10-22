@@ -17,4 +17,6 @@ this repo automates the process of deployong docker+terafik+modSecWAF with ansib
 
 2- you may also need to edit the user in the base and the main role
 
-3- OWASP rules have been manually updated. 
+3- check files and folder permissions in the base role.
+
+4- OWASP rules have been manually updated. 
