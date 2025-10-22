@@ -5,6 +5,9 @@
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1390/badge)](https://bestpractices.coreinfrastructure.org/projects/1390)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+# NOTE
+
+this folder is for the original old rules. As I stated in the README the OWASP rules has been updated as the rules that come with the container are outdated. If you do not care about the old rules you can delete this folder. 
 
 
 # OWASP CRS
